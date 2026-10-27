@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -77,9 +78,14 @@ def build(output: Path, version: str) -> Path:
   kids=[StringFileInfo([StringTable('080404b0', [StringStruct('FileDescription','合同审查台 Windows 试用版'), StringStruct('FileVersion',{version!r}), StringStruct('ProductName','合同审查台'), StringStruct('ProductVersion',{version!r})])]), VarFileInfo([VarStruct('Translation',[2052,1200])])])
 ''', encoding='utf-8')
     spec = work / 'desktop.spec'
+    # Some Python distributions patch ssl.py to read this sibling resource.
+    # Bundle it when present so frozen SSLContext creation keeps the same trust policy.
+    ssl_runtime_data = Path(ssl.__file__).with_name('codex-rejected-cas.pem')
+    ssl_datas = [(str(ssl_runtime_data), '.')] if ssl_runtime_data.is_file() else []
     spec.write_text(f'''from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 root = {str(ROOT)!r}
 datas = [({str(ROOT / 'reader_ui')!r}, 'reader_ui'), ({str(ROOT / 'prompts')!r}, 'prompts'), ({str(ROOT / 'builtin_checklists.json')!r}, '.'), ({str(seed)!r}, 'desktop_seed')]
+datas += {ssl_datas!r}
 datas += collect_data_files('docx')
 datas += collect_data_files('webview')
 datas += [({str(ROOT / 'desktop' / 'remove_helper.ps1')!r}, 'desktop')]
@@ -94,6 +100,7 @@ coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name={APP_NAME!
                     '--workpath', str(work / 'pyinstaller'), str(spec)], cwd=ROOT, check=True)
     app = output / APP_NAME
     shutil.copyfile(ROOT / 'desktop' / '使用说明.txt', app / '先读我.txt')
+    shutil.copyfile(ROOT / 'LICENSE', app / 'LICENSE.txt')
     copy_licenses(app / '第三方许可')
     from desktop_removal import write_program_manifest
     write_program_manifest(app, version=version)

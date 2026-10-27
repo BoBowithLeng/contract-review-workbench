@@ -2,7 +2,11 @@
 
 一个把合同审查、补充事实、讨论意见、确认改稿和 Word 交付放在同一工作台里的个人项目。由 **波波与棱**一起设计和开发。
 
-[2分钟视频演示](https://www.bilibili.com/video/BV1H3pY6WEHQ/) · [Windows 0.1.7 试用包](https://pan.baidu.com/s/1nSsNvOT3U6mc6Mgp7KR0sA?pwd=zc9y)（提取码 `zc9y`）
+> 个人实验性工具，用于辅助审查与流程研究，私用清单覆盖有限，可能存在误报漏报，实际签署前需要结合交易事实专业复核。
+>
+> 模型审查意见与建议修改由所选AI模型生成，请逐项对照合同原文和交易事实核对。
+
+[2分钟视频演示](https://www.bilibili.com/video/BV1H3pY6WEHQ/) · [Windows 0.1.8 试用包](https://pan.baidu.com/s/1Jfjvpe7r1dXdhbhjGXi7xQ?pwd=edtx)（提取码 `edtx`）
 
 ## 维护节奏
 
@@ -26,9 +30,9 @@
 
 ## 直接试用
 
-下载上方 **Windows 10/11 x64 的0.1.7历史试用包**，完整解压后双击 `合同审查台.exe`。该包自带演示记录，看示例不需要模型密钥；新审查、讨论和复审需要填写自己的模型 API，并使用相应服务额度。操作说明在包内 `先读我.txt`。
+下载上方 **Windows 10/11 x64 的0.1.8试用包**，完整解压后双击 `合同审查台.exe`。该包自带演示记录，看示例不需要模型密钥；新审查、讨论和复审需要填写自己的模型 API，并使用相应服务额度。操作说明在包内 `先读我.txt`。
 
-**这个公开源码版本从空工作台开始。** 它不包含旧包中的第三方合同模板与真实演示记录，也不包含个人合同、运行记录或模型密钥。因此自行构建的程序与历史视频／试用包在初始示例数据上有所不同，主体审查流程相同。历史包中的第三方演示材料不属于本仓库的MIT授权范围。
+**这个公开源码版本从空工作台开始。** 它不包含发布试用包中的第三方合同模板与真实演示记录，也不包含个人合同、运行记录或模型密钥。因此自行构建的程序与视频／发布试用包在初始示例数据上有所不同，主体审查流程相同。发布试用包中的第三方演示材料不属于本仓库的MIT授权范围。
 
 ## 从源码运行
 
@@ -71,7 +75,7 @@ Get-ChildItem tests\test_*.cjs | ForEach-Object {
 ```powershell
 python -m venv runtime/desktop-build-env
 .\runtime\desktop-build-env\Scripts\python.exe -m pip install -r desktop/requirements-build.txt
-.\runtime\desktop-build-env\Scripts\python.exe desktop/build_windows.py --output-dir 'D:/contract-review-build-0.1.7' --version 0.1.7
+.\runtime\desktop-build-env\Scripts\python.exe desktop/build_windows.py --output-dir 'D:/contract-review-build-0.1.8' --version 0.1.8
 ```
 
 输出目录必须为空。公开源码构建空数据种子，程序首次打开没有演示合同。桌面界面使用 WebView2 Runtime，构建会收集第三方组件许可。程序未购买代码签名证书；分发前应在另一台Windows机器实际检查启动、审查与Word交付。

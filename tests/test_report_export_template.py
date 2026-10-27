@@ -2,13 +2,15 @@
 import copy
 import io
 import unittest
+from html.parser import HTMLParser
+from pathlib import Path
 
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from contract_core import parse_docx, parse_text
 from document_view import docx_navigation, index_document
-from report_export import export_docx
+from report_export import AI_REVIEW_NOTICE, EXPERIMENTAL_TOOL_NOTICE, export_docx
 from report_presentation import source_locations
 from tests.test_word_numbering import list_definition, number, saved
 
@@ -52,6 +54,45 @@ def acceptance_source():
 
 
 class ReportTemplateTests(unittest.TestCase):
+    def test_tool_notice_and_model_origin_in_report_and_visible_review_ui(self):
+        self.assertEqual(EXPERIMENTAL_TOOL_NOTICE, '个人实验性工具，用于辅助审查与流程研究，私用清单覆盖有限，可能存在误报漏报，实际签署前需要结合交易事实专业复核。')
+        contract = parse_text('测试合同正文。').model_dump()
+        for reader_mode in (False, True):
+            with self.subTest(reader_mode=reader_mode):
+                _, text, _ = read(export_docx(report(mode='ai'), [], contract, reader_mode=reader_mode))
+                self.assertEqual(text.count(EXPERIMENTAL_TOOL_NOTICE), 1)
+                self.assertEqual(text.count(AI_REVIEW_NOTICE), 1)
+                self.assertLess(text.index(EXPERIMENTAL_TOOL_NOTICE), text.index('一、审查意见概览'))
+        _, local_text, _ = read(export_docx(report(mode='local_rules'), [], contract))
+        self.assertIn(EXPERIMENTAL_TOOL_NOTICE, local_text)
+        self.assertNotIn(AI_REVIEW_NOTICE, local_text)
+
+        class NoticeParser(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.in_notice = False
+                self.text = []
+                self.tags = []
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if attrs.get('id') == 'product-notice':
+                    self.in_notice = True
+                    self.tags.append(attrs)
+                if self.in_notice:
+                    assert 'hidden' not in attrs
+            def handle_endtag(self, tag):
+                if tag == 'aside':
+                    self.in_notice = False
+            def handle_data(self, data):
+                if self.in_notice:
+                    self.text.append(data.strip())
+        parser = NoticeParser()
+        html = (Path(__file__).resolve().parents[1] / 'reader_ui' / 'index.html').read_text(encoding='utf-8')
+        parser.feed(html)
+        self.assertEqual(len(parser.tags), 1)
+        self.assertEqual([t for t in parser.text if t], [EXPERIMENTAL_TOOL_NOTICE, AI_REVIEW_NOTICE])
+        self.assertGreater(html.index('id="product-notice"'), html.index('id="rail"'))
+
     def test_source_numbering_recovered_without_mutating_contract(self):
         data = acceptance_source()
         contract = parse_docx(data).model_dump()

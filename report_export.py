@@ -10,6 +10,10 @@ from docx import Document
 from document_view import docx_navigation, index_document, sort_findings_by_document
 from report_presentation import ReportWriter, chinese_number, source_locations
 
+# Keep these notices aligned with #product-notice in reader_ui/index.html.
+EXPERIMENTAL_TOOL_NOTICE = '个人实验性工具，用于辅助审查与流程研究，私用清单覆盖有限，可能存在误报漏报，实际签署前需要结合交易事实专业复核。'
+AI_REVIEW_NOTICE = '模型审查意见与建议修改来自审查时使用者配置、选择的 AI 模型，实际采用内容以人工核对、确认后的结果为准。'
+
 # Same wording as the checklist workspace (resultStatus in reader_ui/checklists.js),
 # so the delivered report never names a state differently from the screen.
 CHECK_STATUS_LABELS = {
@@ -91,6 +95,9 @@ def export_docx(report, sources, contract, reviews=None, selected_options=None, 
         writer.meta('地区：' + ctx['region'] + ('    我方角色：' + role if role else ''))
     if ctx.get('business_goal'):
         writer.body('本次审查要求：' + ctx['business_goal'])
+    writer.body(EXPERIMENTAL_TOOL_NOTICE)
+    if report.get('mode') != 'local_rules' and (report.get('mode') == 'ai' or (report.get('metadata') or {}).get('model_called') is True):
+        writer.body(AI_REVIEW_NOTICE)
     writer.body(f'本报告列示{len(findings)}项审查意见，具体风险、修改建议及处理状态见下文。')
     if reader_mode:
         writer.body('建议文字供核对，合同以已确认的修改为准。不采用修改建议不表示原风险已解决。')

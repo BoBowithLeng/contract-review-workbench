@@ -115,3 +115,7 @@ body.resizing-workspace{cursor:col-resize;user-select:none}
 .delivery-form>details>summary{font-size:12px;color:#786987;cursor:pointer;padding:8px 0}
 .delivery-form .confirmed-change p{overflow-wrap:anywhere;white-space:pre-wrap;font-size:12px;line-height:1.8}
 @media(max-width:920px){.anchors{left:-24px}.risk-legend{gap:4px;font-size:10px}.risk-legend span:not(:first-child){padding:2px 5px}.basic-info{max-width:650px;margin-left:auto;margin-right:auto}}
+
+/* Visible above review opinions; it is separate from the original contract paper. */
+.product-notice{margin:0 0 18px;padding:11px 13px;border-left:2px solid #9cabc0;background:#f0f3f7;color:#526075;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.product-notice p{margin:0}.product-notice p+p{margin-top:7px}

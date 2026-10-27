@@ -6,6 +6,7 @@ import io
 import json
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from docx import Document
@@ -13,6 +14,7 @@ from docx import Document
 from contract_core import parse_docx
 from delivery_bundle import AUDIT_REPORT_FILENAME, FILENAMES, build_bundle, write_bundle
 from delivery_demo import demo_plan, source_document
+from report_export import AI_REVIEW_NOTICE, EXPERIMENTAL_TOOL_NOTICE
 
 
 class DeliveryBundleTests(unittest.TestCase):
@@ -39,6 +41,25 @@ class DeliveryBundleTests(unittest.TestCase):
         self.assertIn(manifest["plan_sha256"], text)
         self.assertIn("陈示例", text)
         self.assertIn("请业务部门核对实际联系人", text)
+
+    def test_tool_notice_is_not_inserted_into_contract_outputs(self):
+        contract = parse_docx(self.data).model_dump()
+        review = {'contract': contract, 'sources': [], 'report': {
+            'fingerprint': contract['fingerprint'], 'mode': 'ai',
+            'findings': [], 'checks': [], 'options': []}}
+        bundle = build_bundle(self.data, self.plan, review_bundle=review)
+        before = self.data
+        for name, data in [('original.docx', self.data), *bundle['files'].items()]:
+            if name == FILENAMES['report']:
+                continue
+            with self.subTest(name=name), zipfile.ZipFile(io.BytesIO(data)) as archive:
+                xml = '\n'.join(archive.read(n).decode('utf-8') for n in archive.namelist() if n.endswith('.xml'))
+                self.assertNotIn(EXPERIMENTAL_TOOL_NOTICE, xml)
+                self.assertNotIn(AI_REVIEW_NOTICE, xml)
+        self.assertEqual(self.data, before)
+        text = '\n'.join(p.text for p in Document(io.BytesIO(bundle['files'][FILENAMES['report']])).paragraphs)
+        self.assertIn(EXPERIMENTAL_TOOL_NOTICE, text)
+        self.assertIn(AI_REVIEW_NOTICE, text)
 
     def test_output_selection_and_new_directory_only(self):
         with tempfile.TemporaryDirectory() as temp:
