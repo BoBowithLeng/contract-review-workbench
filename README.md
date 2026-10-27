@@ -6,7 +6,9 @@
 >
 > 模型审查意见与建议修改由所选AI模型生成，请逐项对照合同原文和交易事实核对。
 
-[2分钟视频演示](https://www.bilibili.com/video/BV1H3pY6WEHQ/) · [Windows 0.1.8 试用包](https://pan.baidu.com/s/1Jfjvpe7r1dXdhbhjGXi7xQ?pwd=edtx)（提取码 `edtx`）
+[2分钟视频演示](https://www.bilibili.com/video/BV1H3pY6WEHQ/) · [下载 Windows 0.1.9 实验版](https://github.com/BoBowithLeng/contract-review-workbench/releases/tag/v0.1.9)
+
+**GitHub Release 是版本真源。** 安装包、版本说明、SHA256和国内网盘镜像都集中在对应发布页。百度网盘仅作同一ZIP的国内下载镜像；同一版本号不替换文件，包有变化就发布新版本。
 
 ## 维护节奏
 
@@ -30,9 +32,21 @@
 
 ## 直接试用
 
-下载上方 **Windows 10/11 x64 的0.1.8试用包**，完整解压后双击 `合同审查台.exe`。该包自带演示记录，看示例不需要模型密钥；新审查、讨论和复审需要填写自己的模型 API，并使用相应服务额度。操作说明在包内 `先读我.txt`。
+适用 **Windows 10/11 x64**，不需要安装Python、Codex或Word来启动程序。
 
-**这个公开源码版本从空工作台开始。** 它不包含发布试用包中的第三方合同模板与真实演示记录，也不包含个人合同、运行记录或模型密钥。因此自行构建的程序与视频／发布试用包在初始示例数据上有所不同，主体审查流程相同。发布试用包中的第三方演示材料不属于本仓库的MIT授权范围。
+1. 打开上方发布页，下载 Assets 下的 **`contract-review-workbench-windows-x64-0.1.9.zip`**；不要把自动生成的 `Source code` 当成Windows安装包。GitHub下载不便时，使用发布页列出的国内镜像。
+2. 完整解压到可写文件夹，双击 `合同审查台.exe`，不要直接在压缩包中运行。
+3. **首次工作台为空。** 点击左下角“设置”，填写你自己的模型服务地址、API Key和模型名称并保存。
+4. 点击“新建审查”，上传自己的DOCX，填写我方主体、选择检查清单和审查要求，按提示完成准备与审查。
+5. 对照原文核对意见，确认需要的修改，再从“交付文件”导出Word。
+
+没有API Key也可以打开界面，但不能执行新的AI审查；可先看上方视频了解操作流程。视频中的预录示例不包含在0.1.9包中，具体步骤见ZIP内 `先读我.txt`。
+
+### 数据与联网
+
+本项目未集成作者侧遥测或统计上报，没有应用自动更新，也不附带作者的模型密钥、账号或可用额度。模型目录获取、审查、讨论及联网检索会连接你配置的模型服务，并按该服务规则使用额度。合同内容会发送至所选模型服务。
+
+界面资源随包本地加载，点击来源链接会打开对应外部网站。合同和操作记录保存在本机“我的数据”；发布包不包含个人合同或历史审查记录。WebView2、操作系统和模型服务自身的联网行为由各自机制管理。
 
 ## 从源码运行
 
@@ -75,7 +89,7 @@ Get-ChildItem tests\test_*.cjs | ForEach-Object {
 ```powershell
 python -m venv runtime/desktop-build-env
 .\runtime\desktop-build-env\Scripts\python.exe -m pip install -r desktop/requirements-build.txt
-.\runtime\desktop-build-env\Scripts\python.exe desktop/build_windows.py --output-dir 'D:/contract-review-build-0.1.8' --version 0.1.8
+.\runtime\desktop-build-env\Scripts\python.exe desktop/build_windows.py --output-dir 'D:/contract-review-build-0.1.9' --version 0.1.9
 ```
 
 输出目录必须为空。公开源码构建空数据种子，程序首次打开没有演示合同。桌面界面使用 WebView2 Runtime，构建会收集第三方组件许可。程序未购买代码签名证书；分发前应在另一台Windows机器实际检查启动、审查与Word交付。

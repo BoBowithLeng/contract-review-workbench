@@ -112,7 +112,7 @@ coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name={APP_NAME!
     for path in app.rglob('*'):
         if path.is_symlink() or path.name in forbidden:
             raise RuntimeError(f'Unexpected distribution entry: {path.name}')
-    archive_path = output / f'{APP_NAME}-Windows-x64-试用版-{version}.zip'
+    archive_path = output / f'contract-review-workbench-windows-x64-{version}.zip'
     with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(app.rglob('*')):
             if path.is_file():
