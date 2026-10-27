@@ -1,0 +1,29 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;color:#263344;font:15px/1.85 'Microsoft YaHei',sans-serif;background:#fff}
+header{padding:10px 16px;background:#f4f5fa;border-bottom:1px solid #dde1ea;display:flex;gap:12px;align-items:center}
+label{white-space:nowrap;font-size:13px;color:#67728a}select{min-width:0;width:100%;padding:7px;border:1px solid #cbd2e3;border-radius:5px;background:#fff;color:#263344}
+#document{height:610px;overflow:auto;padding:12px 22px 40px;scroll-behavior:auto;border:1px solid #dde1ea;border-top:0;border-radius:0 0 8px 8px}
+.paragraph{padding:12px 8px;border-left:3px solid transparent;scroll-margin:30px}.selected{border-left-color:#dd8842;background:#fff7ea}
+.location{font-size:11px;color:#748094;margin-bottom:4px}.body{white-space:pre-wrap;overflow-wrap:anywhere}.level-1{font-size:19px;font-weight:700}.level-2{font-weight:650}
+mark{background:#fff1b8;color:inherit}.selected mark{background:#ffe09a}button{border:1px solid #c8c3e7;border-radius:4px;padding:3px 7px;margin:8px 6px 0 0;background:white;color:#5850a2;font-size:12px;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:3px solid #9b91dd}.muted{color:#778095;font-size:12px}
+@media(max-width:500px){#document{padding:10px;height:500px}body{font-size:14px}}
+</style><header><label for="outline">原稿目录</label><select id="outline" aria-label="原稿目录"><option value="">从头阅读</option></select></header><main id="document" aria-label="合同原稿"></main>
+<script>
+const send=(type,data={})=>window.parent.postMessage({isStreamlitMessage:true,type,...data},'*');
+let lastTarget='',lastHtml='';
+window.addEventListener('message',e=>{
+ if(e.source!==window.parent||e.data.type!=='streamlit:render')return;
+ const a=e.data.args||{}, box=document.getElementById('document');
+ if(a.html!==lastHtml){box.innerHTML=a.html||'';lastHtml=a.html;}
+ const nav=document.getElementById('outline'); const old=nav.value; nav.replaceChildren(new Option('从头阅读',''));
+ for(const section of a.sections||[])nav.add(new Option(section.text,section.id));nav.value=old;
+ if(a.target&&a.target!==lastTarget){const node=document.getElementById(a.target);if(node)box.scrollTop=node.offsetTop-box.offsetTop-Math.max(0,(box.clientHeight-node.offsetHeight)/2);lastTarget=a.target;}
+ if(!a.target)lastTarget='';
+ send('streamlit:setFrameHeight',{height:Math.min(window.innerWidth,600)<500?554:668});
+});
+document.getElementById('outline').addEventListener('change',e=>{const id=e.target.value,box=document.getElementById('document'),node=document.getElementById('p-'+id);box.scrollTop=id&&node?node.offsetTop-box.offsetTop:0;});
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-issue]');if(b)send('streamlit:setComponentValue',{value:{id:b.dataset.issue,seq:Date.now()},dataType:'json'});});
+send('streamlit:componentReady',{apiVersion:1});send('streamlit:setFrameHeight',{height:668});
+</script></html>

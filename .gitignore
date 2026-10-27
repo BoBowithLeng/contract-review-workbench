@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.streamlit/secrets.toml
+runtime/
+*.docx
+*.pdf
+# Local application data and build outputs stay outside version control.
+我的数据/
+dist/
+build/
+.release-qa/
+desktop/demo_records/

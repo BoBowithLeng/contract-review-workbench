@@ -1,0 +1,16 @@
+.desktop-settings{border-top:1px solid #e0e5eb;margin-top:24px;padding-top:18px}
+.desktop-settings h3{font-size:15px;margin:0 0 10px;color:#283748}
+.desktop-settings p,.desktop-remove-dialog p{font-size:13px;line-height:1.7;overflow-wrap:anywhere}
+.desktop-remove-link{border:0;background:none;padding:6px 0;color:#99413c;font:inherit;cursor:pointer}
+.desktop-remove-link:disabled{opacity:.55;cursor:default}
+.desktop-remove-dialog{width:min(560px,calc(100vw - 28px))}
+.desktop-path-label{margin-bottom:5px;color:#687687}
+.desktop-remove-dialog .desktop-path{background:#f4f6f8;border-radius:4px;padding:10px 12px;margin-top:5px;overflow-wrap:anywhere}
+.desktop-delete-data{display:flex;align-items:flex-start;gap:9px;margin-top:24px;font-size:14px;line-height:1.6;cursor:pointer}
+.desktop-delete-data input{margin-top:4px;accent-color:#99413c}
+.desktop-remove-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap}
+.desktop-remove-actions button{font:inherit;font-size:13px;border:1px solid #cfd7df;border-radius:4px;background:white;padding:9px 14px;cursor:pointer}
+#desktop-remove-confirm{background:#99413c;border-color:#99413c;color:white}
+.desktop-remove-actions button:disabled{opacity:.55;cursor:default}
+.desktop-data-open{background:none;border:0;padding:0;font:inherit;color:#1a5fb4;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left;overflow-wrap:anywhere}
+.desktop-data-open:hover{color:#154c91}

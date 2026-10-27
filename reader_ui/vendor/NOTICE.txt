@@ -1,0 +1,12 @@
+Bundled browser libraries for the discussion Markdown view:
+
+- Marked 18.0.14, from npm package marked@18.0.14, MIT license in LICENSE.marked.
+  Upstream: https://github.com/markedjs/marked
+- DOMPurify 3.4.16, from npm package dompurify@3.4.16, Apache-2.0 option
+  of its dual license in LICENSE.dompurify.
+  Upstream: https://github.com/cure53/DOMPurify
+
+These are unmodified upstream distribution files. Wanglai's homegrown renderer
+was reviewed but not copied because it lacks complete CommonMark/GFM behavior.
+Chatbox's GPL-3.0 React model-selector code was reviewed for interaction only;
+none of its code is included here.

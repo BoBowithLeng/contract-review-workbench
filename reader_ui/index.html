@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,"><title>合同审查工作台</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/right-panel.css"><link rel="stylesheet" href="/upload.css"><link rel="stylesheet" href="/workbench.css"><link rel="stylesheet" href="/discussion.css"><link rel="stylesheet" href="/checklists.css"><link rel="stylesheet" href="/information_gate.css">
+  <link rel="stylesheet" href="/desktop_ui.css">
+</head>
+<body class="home-mode">
+  <header class="topbar">
+    <a class="identity" id="workbench-brand" href="/" aria-label="返回合同审查工作台"><span class="logo" aria-hidden="true">≡</span><span class="word">合同审查</span></a>
+    <button class="workbench-back" id="back-workbench" type="button" hidden>← 工作台</button>
+    <div class="file" id="reader-heading" hidden><span id="current-file-name"></span></div>
+    <span class="home-location" id="home-location">工作台</span>
+    <button class="open-checklists" id="open-checklists" type="button">清单库</button>
+    <button class="about-product" id="about-product" type="button">作品说明</button>
+    <button class="exit new-review" id="new-review" type="button">新建审查</button>
+    <button class="export" id="rereview" type="button" hidden disabled>复审全文</button>
+    <button class="export" id="export" hidden disabled>交付文件</button>
+  </header>
+  <section class="workbench-view" id="workbench-view" aria-labelledby="workbench-title">
+    <div class="desk-layout">
+    <aside class="group-sidebar" aria-label="合同分组"><div class="group-sidebar-title"><span>合同分组</span><button id="create-group" type="button" aria-label="新建分组">＋</button></div><nav id="group-list" aria-label="分组列表"></nav><div class="sidebar-footer"><button id="workbench-settings" type="button" title="模型、服务商与默认配置"><span aria-hidden="true">⚙</span> 设置</button></div></aside>
+    <div class="desk-content">
+    <div class="workbench-intro"><div><p class="workbench-eyebrow">合同与审查记录</p><h1 id="workbench-title">我的合同</h1></div><p id="workbench-count" class="workbench-count"></p></div>
+    <div class="workbench-tools"><label class="contract-search"><span aria-hidden="true">⌕</span><input id="contract-search" type="search" placeholder="搜索合同名称" aria-label="搜索合同名称"></label><select id="contract-status" aria-label="筛选处理状态"><option value="">全部状态</option><option>审查中</option><option>等你操作</option><option>待复核</option><option>已复核</option><option>出错</option></select><button id="refresh-workbench" class="workbench-refresh" type="button">刷新列表</button></div>
+    <div id="workbench-error" class="inline-error" role="alert" hidden></div>
+    <div id="contract-list" class="contract-list" aria-live="polite"><p class="workbench-empty">正在读取合同…</p></div>
+    </div></div>
+  </section>
+  <div id="review-toolbar" class="review-toolbar" hidden><span class="review-stance-label">审查立场：</span><span id="review-stance" class="review-stance"></span><small id="save-status" class="live-status">已保存审核结果</small><span id="review-round" class="review-round-label" hidden></span><a id="previous-round" class="previous-round" hidden>← 回到前一轮</a><a id="next-round" class="previous-round" hidden>查看下一轮复审 →</a></div>
+  <nav class="rail-tabs review-view-tabs" id="review-view-tabs" aria-label="审查结果页面" hidden>
+    <button class="current" id="tab-findings">审阅意见 <small id="findings-count"></small></button>
+    <button id="tab-checklists">清单检查情况 <small id="checklists-count"></small></button>
+    <button id="tab-facts">审查信息</button>
+    <button id="tab-options">处理方案 <small id="options-count"></small></button>
+    <button id="tab-basics">基本内容 <small id="basics-count"></small></button>
+  </nav>
+  <section class="checklist-workspace" id="review-checklist-results" aria-label="清单检查情况" hidden></section>
+  <section class="information-workspace" id="information-gate" aria-label="报告交付前的审查信息" hidden></section>
+  <section class="information-workspace" id="review-contract-facts" aria-label="审查信息" hidden></section>
+  <main class="workspace" id="reader-workspace" hidden>
+    <section class="document-area" id="document-area" aria-label="合同原稿">
+      <div class="document-tools">
+        <div class="outline-wrap"><button class="hint" id="outline-toggle" aria-expanded="false">原稿目录 ▾</button><nav class="outline" id="outline" aria-label="原稿目录" hidden></nav></div>
+        <div class="risk-legend" aria-label="原稿标色说明"><span>风险</span><span class="high">高</span><span class="medium">中</span><span class="low">低</span></div>
+        <span id="document-mode-label">原稿 · 只读</span>
+      </div>
+      <article class="paper" id="paper"><div class="loading">正在读取合同与审核结果…</div></article>
+    </section>
+    <div id="workspace-splitter" class="workspace-splitter" role="separator" tabindex="0" aria-label="拖动调整文档和意见宽度" aria-orientation="vertical" aria-controls="document-area rail"></div>
+    <aside class="rail" id="rail" aria-label="审阅意见">
+      <div class="rail-heading">
+        <div id="basic-info" class="basic-info" hidden></div>
+        <div id="review-research-info" class="basic-info" role="status" hidden></div>
+        <div id="rereview-notes" hidden></div>
+        <div class="rail-nav"><button class="nav-button" id="prev" aria-label="上一条" disabled>‹</button><span id="counter"></span><button class="nav-button" id="next" aria-label="下一条" disabled>›</button><button class="all-button" id="list-toggle" aria-expanded="false">全部意见 ▾</button></div>
+      </div>
+      <div id="error" class="inline-error" role="alert" hidden></div>
+      <div class="issue-list" id="issue-list" hidden></div>
+      <section class="card" id="review-card"><div class="loading">载入中…</div></section>
+      <section id="discussion-pane" class="discussion-pane" aria-label="当前意见讨论" hidden>
+        <header class="discussion-heading"><button id="discussion-back" type="button">← 返回意见</button><strong>讨论这条</strong><button id="discussion-expand" type="button" aria-pressed="false" title="切换全屏讨论，按 Esc 退出">全屏讨论</button><button id="discussion-settings" type="button">模型设置</button></header>
+        <div class="discussion-session-bar"><label for="discussion-session">讨论轮次</label><select id="discussion-session" aria-label="选择这条意见的讨论轮次"></select><button id="discussion-new-session" type="button">新建讨论</button></div>
+        <div class="discussion-context"><p id="discussion-topic"></p><small id="discussion-context-note"></small><div class="discussion-revision-actions"><button id="discussion-generate-opinion" type="button">生成新版意见</button><button id="discussion-opinion-history" type="button">查看意见版本</button></div></div>
+        <div id="discussion-log" class="discussion-log" role="log" aria-live="polite"></div>
+        <form id="discussion-form" class="discussion-compose"><textarea id="discussion-input" aria-label="对当前意见的疑问或补充事实" maxlength="4000" rows="2" placeholder="指出你的疑问、反驳，或补充具体事实…"></textarea><p id="discussion-error" class="discussion-error" role="alert" hidden></p><div class="discussion-send-row"><button id="discussion-model" type="button" aria-expanded="false" aria-controls="discussion-model-picker">选择模型</button><label id="discussion-search-control" class="discussion-search-control" title="由 DeepSeek 检索公开网页，可能增加模型用量。" hidden><input id="discussion-web-search" type="checkbox">联网检索</label><button id="discussion-stop" type="button" hidden>停止</button><button id="discussion-send" type="submit">发送</button></div><div id="discussion-model-picker" class="discussion-model-picker" role="dialog" aria-label="选择讨论模型" hidden><div class="discussion-model-picker-head"><strong>选择模型</strong><button id="discussion-model-close" type="button" aria-label="关闭模型选择">×</button></div><input id="discussion-model-search" type="search" aria-label="搜索服务商或模型" placeholder="搜索服务商或模型"><div id="discussion-model-list" class="discussion-model-list"></div><p id="discussion-model-status" class="discussion-model-status" role="status"></p></div></form>
+      </section>
+      <div class="footer-actions" hidden><button class="link-button" id="undo" hidden disabled></button><span class="help" id="progress"></span></div>
+    </aside>
+  </main>
+  <dialog id="change-dialog" class="work-dialog" aria-labelledby="change-title">
+    <header class="dialog-head">
+      <h2 id="change-title">确认合同改稿</h2>
+      <button type="button" class="dialog-close" id="change-close" aria-label="关闭确认合同改稿窗口">×</button>
+    </header>
+    <div id="change-body" class="dialog-body"></div>
+  </dialog>
+  <dialog id="delivery-dialog" class="work-dialog" aria-labelledby="delivery-title">
+    <header class="dialog-head">
+      <h2 id="delivery-title">选择交付文件</h2>
+      <button type="button" class="dialog-close" id="delivery-close" aria-label="关闭选择交付文件窗口">×</button>
+    </header>
+    <div id="delivery-body" class="dialog-body"></div>
+  </dialog>
+  <dialog id="new-review-dialog" class="work-dialog review-job-dialog" aria-labelledby="new-review-title">
+    <header class="dialog-head">
+      <h2 id="new-review-title">新建审查</h2>
+      <button type="button" class="dialog-close" id="new-review-close" aria-label="关闭新建审查窗口">×</button>
+    </header>
+    <div id="new-review-body" class="dialog-body"></div>
+  </dialog>
+  <dialog id="group-dialog" class="work-dialog group-dialog" aria-labelledby="group-title"><header class="dialog-head"><h2 id="group-title">新建分组</h2><button id="group-close" type="button" class="dialog-close" aria-label="关闭分组窗口">×</button></header><div id="group-body" class="dialog-body"></div></dialog>
+  <dialog id="model-settings-dialog" class="work-dialog model-settings-dialog" aria-labelledby="model-settings-title">
+    <header class="dialog-head"><h2 id="model-settings-title">模型设置</h2><button id="settings-close" type="button" class="dialog-close" aria-label="关闭模型设置">×</button></header>
+    <div class="dialog-body"><form id="model-settings-form" class="model-settings-form">
+      <p>新审查与条款讨论默认使用这里保存的配置。</p>
+      <label>服务商<select id="settings-provider" aria-label="模型服务商"></select></label>
+      <label>API 地址<input id="settings-base-url" type="url" required placeholder="https://api.example.com/v1" autocomplete="off"></label>
+      <label>API Key<input id="settings-api-key" type="password" required autocomplete="off" maxlength="4096"></label>
+      <div id="settings-model-field" class="api-model-field"><span>默认模型</span><input id="settings-model-id" type="text" required maxlength="200" autocomplete="off"></div>
+      <p>密钥由当前 Windows 账户加密保存在本机。</p>
+      <p id="settings-error" class="discussion-error" role="alert" hidden></p>
+      <div class="model-settings-actions"><button id="settings-remove" class="settings-remove" type="button" hidden>移除此服务商配置</button><button id="settings-save" class="settings-save" type="submit">保存设置</button></div>
+    </form>
+    <section id="desktop-settings" class="desktop-settings" hidden aria-labelledby="desktop-settings-title">
+      <h3 id="desktop-settings-title">软件与数据</h3>
+      <p id="desktop-data-location"></p>
+      <button type="button" id="desktop-remove-open" class="desktop-remove-link">移除软件</button>
+      <p id="desktop-settings-error" class="discussion-error" role="alert" hidden></p>
+    </section></div>
+  </dialog>
+  <dialog id="desktop-remove-dialog" class="work-dialog desktop-remove-dialog" aria-labelledby="desktop-remove-title">
+    <header class="dialog-head"><h2 id="desktop-remove-title">移除合同审查台</h2><button id="desktop-remove-close" type="button" class="dialog-close" aria-label="取消移除">×</button></header>
+    <div class="dialog-body">
+      <p>确认后，审查台会退出并移除程序文件。你另外下载的 Word 文件不受影响。</p>
+      <p class="desktop-path-label">程序所在文件夹</p><p id="desktop-remove-app-path" class="desktop-path"></p>
+      <label class="desktop-delete-data"><input type="checkbox" id="desktop-remove-data">同时移除审查记录、讨论和模型设置</label>
+      <p id="desktop-remove-data-note"></p>
+      <p id="desktop-remove-data-path" class="desktop-path"></p>
+      <p id="desktop-remove-error" class="discussion-error" role="alert" hidden></p>
+      <div class="desktop-remove-actions"><button type="button" id="desktop-remove-cancel">取消</button><button type="button" id="desktop-remove-confirm">保留数据并移除软件</button></div>
+    </div>
+  </dialog>
+  <dialog id="opinion-revision-dialog" class="work-dialog opinion-revision-dialog" aria-labelledby="opinion-revision-title">
+    <header class="dialog-head"><h2 id="opinion-revision-title">这条意见的版本</h2><button type="button" class="dialog-close" id="opinion-revision-close" aria-label="关闭意见版本窗口">×</button></header>
+    <div id="opinion-revision-body" class="dialog-body"></div>
+  </dialog>
+  <dialog id="about-dialog" class="work-dialog about-dialog" aria-labelledby="about-title">
+    <header class="dialog-head"><h2 id="about-title">合同审查台 · 作品说明</h2><button id="about-close" type="button" class="dialog-close" aria-label="关闭作品说明">×</button></header>
+    <div class="dialog-body about-content">
+<h3 id="about-content-title">这个作品解决什么问题</h3>
+<p>AI 列出合同风险以后，法务还有很多事要做：回到原文核对，告诉 AI 实际交易情况，讨论这条建议要不要采用，再把决定好的文字改进合同，交付 Word 文件。
+这个作品把这些步骤放在同一个工作台里。上传一份合同后，可以边看原文边讨论，确认修改，再下载合同和审查报告，减少来回复制聊天答案、查找对应条款的操作。</p>
+<p><strong>AI 提出意见和改稿，人决定是否采用。</strong>
+讨论中的建议不会直接改掉合同，确认后的修改才会进入交付文件。</p>
+<h3 id="about-capabilities-title">当前能做什么</h3>
+<h4 id="about-part-1">1. 上传合同，告诉 AI 要怎么查</h4>
+<table class="about-table about-capabilities" aria-labelledby="about-part-1">
+<thead>
+<tr>
+<th scope="col">想做什么</th>
+<th scope="col">怎样操作，之后会发生什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<th scope="row">选一份检查清单</th>
+<td data-label="怎样操作，之后会发生什么">上传 DOCX 合同，说明代表哪一方，再选择清单。内置 <strong>通用合同清单</strong>，供没有专门清单的合同使用；另有 <strong>软件开发合同清单（客户立场）</strong>，已经包含适用的通用检查内容，选这一份即可。</td>
+</tr>
+<tr>
+<th scope="row">使用自己的检查标准</th>
+<td data-label="怎样操作，之后会发生什么">内置清单可以直接用，原版不能直接修改。想调整时，先复制成自己的清单再编辑；也可以新建清单，或下载 Excel 模板，填写后导入。</td>
+</tr>
+<tr>
+<th scope="row">交代这份合同的特别要求</th>
+<td data-label="怎样操作，之后会发生什么">在“审查要求”里填写这次特别在意的事，例如“重点检查付款条件”“不接受自动续约”。这些要求会和清单一起交给 AI，不需要为了这一份合同去改常用清单。</td>
+</tr>
+</tbody></table>
+<p><strong>接下来，从开始检查到看到报告，分三步：</strong></p>
+<table class="about-table about-flow" aria-labelledby="about-part-1">
+<thead>
+<tr>
+<th scope="col">步骤</th>
+<th scope="col">你会看到什么、需要做什么</th>
+<th scope="col">AI 在什么时候处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<th scope="row">① 先粗读，问必要的问题</th>
+<td data-label="你会看到什么、需要做什么">AI 先看合同，发现需要了解的交易情况时，会列出问题。知道的就回答，不知道的可以选择“暂不能提供”；没有问题则进入下一步。</td>
+<td data-label="AI 在什么时候处理">调用模型粗读、提出问题。填写和保存答案本身不调用模型，答案留给下一步使用。</td>
+</tr>
+<tr>
+<th scope="row">② 正式审查全文</th>
+<td data-label="你会看到什么、需要做什么">开始全文审查后，AI 按清单和审查要求检查合同。第一步回答了，就带着答案审；没有回答，也会检查能判断的部分，把缺少的信息保留下来。</td>
+<td data-label="AI 在什么时候处理">再调用模型审查全文。第一步的答案随这次审查一起发送，不另外增加一次“处理答案”的调用。</td>
+</tr>
+<tr>
+<th scope="row">③ 展示报告前，处理审查中新发现的问题</th>
+<td data-label="你会看到什么、需要做什么">如果全文审查后还有需要补问的问题，会先集中列出来。逐题回答，或注明“暂不能提供”，提交后再看报告；没有问题则直接展示报告。</td>
+<td data-label="AI 在什么时候处理"><strong>提供了新答案：</strong>再调用一次模型，根据答案调整相关意见，然后展示报告。<strong>全部暂不能提供：</strong>不追加这次调整，直接展示已有报告，未知信息仍保留为待确认事项。</td>
+</tr>
+</tbody></table>
+<p>所以，粗读后的答案带进全文审查；全文审查后补充的新答案，才会再触发一次相关意见调整。</p>
+<h4 id="about-part-2">2. 看检查结果，把有疑问的地方聊清楚</h4>
+<table class="about-table about-capabilities" aria-labelledby="about-part-2">
+<thead>
+<tr>
+<th scope="col">想做什么</th>
+<th scope="col">怎样操作，之后会发生什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<th scope="row">对照原文看风险</th>
+<td data-label="怎样操作，之后会发生什么">打开 <strong>“审阅意见”</strong>，一边看合同，一边看 AI 指出的问题、理由、依据和修改建议。点击意见中的原文位置，会定位到对应条款；一条意见涉及多处原文时，可以分别查看。</td>
+</tr>
+<tr>
+<th scope="row">看清单里的要求查得怎么样</th>
+<td data-label="怎样操作，之后会发生什么">打开 <strong>“清单检查情况”</strong>。每个检查项旁有状态提示；展开后，可以对照原来的检查要求、这次的检查结果，以及关联的审阅意见。点击其中的“意见N”可以查看对应意见，点击条号可以定位原文，再返回刚才的检查项。这样能看出哪里发现问题、哪里还缺信息，不用记住整张清单。</td>
+</tr>
+<tr>
+<th scope="row">追问或反驳一条意见</th>
+<td data-label="怎样操作，之后会发生什么">点 <strong>“讨论这条”</strong>，可以问“为什么这样判断”，也可以指出遗漏、补充交易情况。AI 会看到整份已确认修改后的合同、其他意见的当前内容和处理状态，便于一起考虑互相影响的条款。长回复可以切换为全屏阅读，看完再回到合同旁边。</td>
+</tr>
+<tr>
+<th scope="row">回答跑偏时停下来</th>
+<td data-label="怎样操作，之后会发生什么">AI 回复期间，发送按钮会变成 <strong>“停止”</strong>。停止后这一轮记为“已停止回答”，晚到的回复直接丢弃，也不会带进后续讨论；改好问题可以马上重新发送。已经发出的模型请求仍会按服务商规则计费。</td>
+</tr>
+<tr>
+<th scope="row">换个思路重新聊</th>
+<td data-label="怎样操作，之后会发生什么">点 <strong>“新建讨论”</strong>，会为这条意见开启一轮空聊天，仍带当前合同和意见，但不带上一轮的聊天内容。旧讨论保留，可以从“讨论轮次”下拉框切回去看或继续聊。</td>
+</tr>
+<tr>
+<th scope="row">换模型，或让 AI 查资料</th>
+<td data-label="怎样操作，之后会发生什么">点击输入框旁的模型名称，可以选择已配置的模型，继续当前聊天。使用支持联网的 DeepSeek 连接时，可以勾选 <strong>“联网检索”</strong>，让 AI 按需要查找公开资料。AI联网检索所引用的资料附有来源链接，方便查看原文。</td>
+</tr>
+<tr>
+<th scope="row">把讨论结果更新到意见里</th>
+<td data-label="怎样操作，之后会发生什么">聊完后点 <strong>“生成新版意见”</strong>，先看生成前和新版分别怎么说、为什么改，再决定是否 <strong>“采用这版意见”</strong>。采用后，意见卡和后续导出的审查报告会使用新版；旧版可以回看，合同正文此时还没有修改。</td>
+</tr>
+<tr>
+<th scope="row">保存或更正补充信息</th>
+<td data-label="怎样操作，之后会发生什么">AI 从聊天中提炼出补充信息时，会展示对应原话。核对后，可以确认保存为新信息，或用它更正已有信息。<strong>“审查信息”</strong> 集中列出已提供的信息和待回答的问题，也可以手动补充、编辑或撤回。保存的信息供后续讨论和复审使用，当前报告不会因此自动重写。</td>
+</tr>
+</tbody></table>
+<p><strong>每个讨论的聊天记录分别保留，已确认的信息则在这份合同内共用。</strong> 例如，在付款意见的讨论里确认保存“项目必须在12月15日上线”后，再讨论验收条款时，AI 也会带上这条信息；付款讨论的整段聊天不会一起带过去。</p>
+<h4 id="about-part-3">3. 确认具体改动，再检查和交付</h4>
+<table class="about-table about-capabilities" aria-labelledby="about-part-3">
+<thead>
+<tr>
+<th scope="col">想做什么</th>
+<th scope="col">怎样操作，之后会发生什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<th scope="row">把建议变成合同文字</th>
+<td data-label="怎样操作，之后会发生什么">新生成的报告和新版意见会一起说明哪里修改、哪里新增、哪些相关原文保留。信息足够时，点 <strong>“仅修改”</strong> 就能直接预览删改对比，这一步由程序展示，不再为整理改稿调用一次 AI。确认前可以自己调整文字，确认后才写入改后合同。缺少必要答案时，意见里会提前列出具体问题；补充后可以在讨论中生成新版意见，再查看改稿。</td>
+</tr>
+<tr>
+<th scope="row">继续处理以前的报告</th>
+<td data-label="怎样操作，之后会发生什么">旧报告不会自动重跑。能明确对应单处原文的建议，仍可直接预览；尚未分清具体修改位置的旧建议会显示 <strong>“整理改稿”</strong>，先选择已配置的模型并确认调用，AI 整理后再供你预览、确认。不需要另外安装本机 Codex。</td>
+</tr>
+<tr>
+<th scope="row">先留批注，不改正文</th>
+<td data-label="怎样操作，之后会发生什么">可以只添加批注，把问题或协商意见留在对应位置；也可以同时修改正文并添加批注。</td>
+</tr>
+<tr>
+<th scope="row">检查改后的样子</th>
+<td data-label="怎样操作，之后会发生什么">在合同正文区切换 <strong>“原稿”“修订预览”“改后预览”</strong>，分别看原文、删改痕迹和改后的正文。</td>
+</tr>
+<tr>
+<th scope="row">撤销已经确认的改稿或批注</th>
+<td data-label="怎样操作，之后会发生什么"><strong>确认过改稿或添加过批注后</strong>，点页面上方的 <strong>“交付文件”</strong>，再点带数量的 <strong>“查看已确认的修改（…）和批注（…）”</strong> 按钮。展开列表后，找到不想保留的那一处，点击移除。移除改稿会恢复那处原文；若是新增条款，则撤掉新增文字，与该改稿关联的批注也会一并移除。<strong>没有已确认的改稿和批注时，这个列表不会显示。</strong> 如果只想退回刚才一步，有可撤回的操作时，窗口里还会出现相应的撤回按钮。</td>
+</tr>
+<tr>
+<th scope="row">改完后再查一遍全文</th>
+<td data-label="怎样操作，之后会发生什么">点 <strong>“复审全文”</strong>，AI 会按照原来选定的清单和审查要求，结合已确认的补充信息，重新检查改后的整份合同。<strong>复审也会参考上一轮的审阅意见</strong>，包括当时指出的问题、理由、建议，以及这些意见的处理情况，例如哪些地方已修改、哪些建议没有采用；据此检查原问题是否解决、有没有新的矛盾或遗漏。复审生成另一轮报告，前一轮仍可回看。</td>
+</tr>
+<tr>
+<th scope="row">下载需要的文件</th>
+<td data-label="怎样操作，之后会发生什么">点 <strong>“交付文件”</strong>，勾选需要的文件，再点 <strong>“下载所选文件”</strong>，得到只装有所选 Word 文件的 ZIP。<strong>洁净版</strong>只看改后的正文；<strong>修订版</strong>保留删改痕迹，可在 Word 中接受或拒绝修订；<strong>原稿批注版</strong>不改原文，只附沟通批注；<strong>修订＋批注版</strong>同时保留删改和批注。也可以只勾选<strong>审查报告</strong>。上传的原稿保留，合同文件只包含已经确认的修改与批注。<br><br><strong>审查报告</strong>汇总风险、理由和修改建议，标明对应合同条款，并附来源链接，方便下载后继续核对或与同事讨论。<br>报告里的修改文字可能仍是待确认的建议，是否已经改进合同，要看处理状态；只有确认过的修改才进入合同各版本。下载只是把现有意见和记录排成文件，不会再调用 AI，也不要求安装本机 Codex 或 Word 软件来生成；Word 是打开、编辑交付文件的一种方式。</td>
+</tr>
+</tbody></table>
+<h4 id="about-part-4">平时怎样管理这些合同</h4>
+<p>工作台可以按合同名称搜索、按处理状态筛选，也可以自己建立分组。不再需要的审查记录可以删除；没有回收站，删除前需确认。</p>
+<p>审核运行时可以关闭任务窗口，继续看其他合同；后台完成后会提示，不会把正在看的合同直接切走。这里的“关闭窗口”指页面里的任务窗口，本机服务仍需保持运行。</p>
+<p>Windows 试用版解压后双击即可打开独立软件窗口。关闭软件窗口就是退出；还有审查、下载等任务时，会提示先等任务结束。设置里的 <strong>“移除软件”</strong> 可以清除程序，默认留下审查记录并告诉你保存位置；勾选同时移除数据时，记录、讨论和模型设置会送到 Windows 回收站。另行下载的 Word 文件不受影响。</p>
+<h3 id="about-choices-title">本期取舍</h3>
+<table class="about-table about-choices" aria-labelledby="about-choices-title">
+<thead>
+<tr>
+<th scope="col">暂未做的功能</th>
+<th scope="col">取舍理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<th scope="row">更多合同类型的内置清单，以及 AI 自动选择清单</th>
+<td data-label="取舍理由">每增加一类，都需要核对检查标准并用对应合同验证；自动选错清单还会影响审查方向。先验证清单是否好用，再扩大覆盖范围。</td>
+</tr>
+<tr>
+<th scope="row">在同一份审查中更换清单，或加入清单库后来新增的检查项再审</th>
+<td data-label="取舍理由">换了检查标准，报告变化可能来自合同修改，也可能来自标准变化，需要额外设计版本管理和结果对照。</td>
+</tr>
+<tr>
+<th scope="row">更多厂商的专有模型接口与联网能力</th>
+<td data-label="取舍理由">各家的接口、联网方式和实际回答效果需要分别适配、测试，接入数量暂不作为这份作品的重点。</td>
+</tr>
+<tr>
+<th scope="row">接入专业法律数据库或企业资料库</th>
+<td data-label="取舍理由">还要处理资料授权、检索接口与更新方式，适合有明确资料来源和使用需求后再接。</td>
+</tr>
+<tr>
+<th scope="row">上传整本企业制度，自动提炼审查规则</th>
+<td data-label="取舍理由">需要判断哪些规定与这笔交易有关，也要核对制度本身是否合理、是否互相冲突，适合结合具体企业资料设计。</td>
+</tr>
+<tr>
+<th scope="row">自动脱敏、完整的隐私告知与 AI 生成内容标识</th>
+<td data-label="取舍理由">怎么脱敏、告知什么、标识到哪一层，取决于合同涉及的数据类型、所用模型服务和部署方式（本机、云端或企业内网），适合结合实际业务来定。当前版本先验证审查、人工确认和交付流程；每次把合同发给在线模型前，都会写明发送内容和所选模型，勾选同意后才发送。</td>
+</tr>
+<tr>
+<th scope="row">多人协作、审批流程与权限分配</th>
+<td data-label="取舍理由">谁能查看合同、修改条款、确认结果，各家公司要求不同，需要先明确实际分工和审批流程。</td>
+</tr>
+<tr>
+<th scope="row">通过 MCP 操作其他系统，以及由 AI 自行安排连续任务</th>
+<td data-label="取舍理由">尚无明确的跨系统操作需求，暂不增加工具授权、执行确认和中断恢复等流程。</td>
+</tr>
+<tr>
+<th scope="row">扫描件识别、PDF 审查和更多复杂 Word 排版的支持</th>
+<td data-label="取舍理由">识别文字后还要准确对应原文位置，并保证改稿与导出不破坏文档；这部分需要单独准备文档样例和验证。</td>
+</tr>
+<tr>
+<th scope="row">讨论中重新回答，或修改自己发过的话再让 AI 重答</th>
+<td data-label="取舍理由">讨论目前是一条直线；回答跑偏时可以先停止，再换个问法发送，或点“新建讨论”换思路。要做成常见聊天软件那样的分支，就要说清每一支里提炼的补充信息、生成的新版意见归哪一支、换支后是否还有效。这些与“确认信息在整份合同内共用”的规则相关，适合单独设计。</td>
+</tr>
+<tr>
+<th scope="row">把谈判方案挂到具体条款上，随模板保存，并可在讨论中补充</th>
+<td data-label="取舍理由">方案目前跟随每份报告。要沉淀成可复用的谈判预案（首选写法、可退让位置、底线），还需要设计条款与方案的对应关系，以及跟随模板版本更新的方式，适合积累更多实际谈判案例后再做。</td>
+</tr>
+<tr>
+<th scope="row">报告、清单检查结果、审阅意见、解决方案分别导出</th>
+<td data-label="取舍理由">目前合在一份审查报告里，方便完整留档。不同角色往往只需要其中一部分，例如老板看方案、法务看意见，拆分方式适合结合实际使用者再定。</td>
+</tr>
+</tbody></table>
+<p>工作台和审查记录保存在本机。选择在线模型时，需要提供给 AI 的合同内容仍会发送到所选模型服务，不是全程离线处理。</p>
+    </div>
+  </dialog>
+  <section class="background-review-complete" id="background-review-complete" aria-label="后台审查完成" aria-live="polite" hidden></section>
+  <div class="toast" role="status" id="toast"></div>
+  <script src="/workspace.js"></script>
+  <script src="/delivery.js"></script>
+  <script src="/api_profiles.js"></script>
+  <script src="/model_settings.js"></script>
+  <script src="/desktop_ui.js"></script>
+  <script src="/checklists.js"></script>
+  <script src="/review_jobs.js"></script>
+  <script src="/workbench.js"></script>
+  <script src="/marked.umd.js"></script>
+  <script src="/purify.min.js"></script>
+  <script src="/readable_text.js"></script>
+  <script src="/contract_facts.js"></script>
+  <script src="/information_gate.js"></script>
+  <script src="/rereview.js"></script>
+  <script src="/discussion.js"></script>
+  <script src="/opinion_revisions.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

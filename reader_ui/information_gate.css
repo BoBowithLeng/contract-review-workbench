@@ -1,0 +1,33 @@
+.information-workspace{height:calc(100vh - 158px);overflow:auto;box-sizing:border-box;padding:32px 28px 70px;background:var(--bg,#f7f8fa)}
+.information-workspace[hidden]{display:none}
+#information-gate{height:calc(100vh - 68px)}
+.information-gate-pane,.information-workspace>.contract-facts{max-width:900px;margin:0 auto}
+.information-gate-pane h1{font-size:26px;margin:6px 0 14px;line-height:1.4}
+.information-eyebrow{font-size:12px;letter-spacing:.1em;color:#6b7381;margin:0}
+.information-gate-form{margin-top:28px;gap:20px}
+.information-gate-form .preparation-question{padding:22px 24px;background:white;border:1px solid #e0e4e9;border-radius:12px}
+.information-gate-form .preparation-question h3{font-size:17px;margin:0 0 12px;line-height:1.6}
+.information-gate-form textarea{display:block;width:100%;min-height:100px;box-sizing:border-box;resize:vertical}
+.information-gate-form .fact-unknown{margin-top:12px}
+.information-model{padding:20px 24px;background:#f0f3f7;border-radius:12px}
+.information-model h3{font-size:16px;margin:0 0 10px}
+.information-model .review-model-selector{max-width:500px;margin:18px 0}
+.information-model[hidden]{display:none}
+.information-answer-count{font-size:13px;color:#697383;margin:0}
+.information-answer{margin-top:20px;padding:16px 24px;border-left:3px solid #d5dce6;background:#fff}
+.information-answer h3{font-size:16px;margin:0 0 8px}
+.information-answer p{white-space:pre-wrap;line-height:1.8;margin:0}
+.finding-information-notice{margin:20px 0;padding:16px 18px;border:1px solid #dcc9a4;border-left:4px solid #a86d16;border-radius:6px;background:#fff8eb;color:#513c20}
+.finding-information-notice>strong{font-size:15px;color:#754600}
+.finding-information-notice>strong+.finding-information-link{margin-left:12px}
+.finding-information-notice .information-question-preview{margin:8px 0 12px;font-size:14px;line-height:1.65;color:#493b29}
+.finding-information-notice>small{display:block;margin:0 0 10px}
+.finding-information-notice .finding-information-link{display:inline-block;border:1px solid #94601c;background:#94601c;padding:7px 15px;border-radius:5px;color:white;cursor:pointer;font-size:13px;font-weight:600}
+.finding-information-notice .finding-information-link:hover{background:#794b0c}
+.contract-question:focus,.contract-fact:focus{outline:2px solid #667f9f;outline-offset:3px}
+.fact-question-answer{white-space:pre-wrap;line-height:1.8}
+.background-review-complete{position:fixed;right:20px;bottom:20px;z-index:80;width:min(360px,calc(100vw - 40px));box-sizing:border-box;padding:16px 18px;border:1px solid #b9cadc;border-radius:8px;background:#fff;box-shadow:0 5px 22px #172e4924;display:flex;gap:10px;flex-wrap:wrap}
+.background-review-complete[hidden]{display:none}.background-review-complete>strong,.background-review-complete>span{flex-basis:100%;overflow-wrap:anywhere}
+.background-review-complete>strong{font-size:15px;color:#22486e}.background-review-complete>span{font-size:13px;color:#5e6772;line-height:1.6}
+.background-review-complete button{padding:7px 12px;cursor:pointer;border-radius:4px;font-size:13px}
+@media(max-width:700px){.information-workspace{padding:24px 16px 50px}.information-gate-pane h1{font-size:22px}.information-gate-form .preparation-question,.information-model{padding:16px}.information-gate-form .review-job-actions{flex-wrap:wrap}}
